@@ -13,6 +13,7 @@ const UserUpdate = () => {
   const [newMemberShip, setNewMemberShip] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
   const [isFeatured, setIsFeatured] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [activeCard, setActiveCard] = useState("");
 
   if (router.isFallback) {
@@ -138,6 +139,51 @@ const UserUpdate = () => {
 
       <div className="w-full md:w-[85%] mx-auto">
         <div className="flex flex-col gap-3 border border-gray-200 p-10 shadow-md">
+          <h1 className="mb-5 font-bold">Change User Password</h1>
+          <div className="flex flex-col gap-3">
+            <label htmlFor="new-password" className="text-sm font-medium">
+              New Password
+            </label>
+            <input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="outline-none shadow-sm p-3 rounded-xl w-full border border-gray-200"
+              placeholder="Enter new password"
+            />
+          </div>
+          <button
+            className="mt-10 bg-navBtnBg-Color text-white p-3 rounded-xl"
+            onClick={() => {
+              if (!newPassword) return;
+              setActiveCard("password");
+              setLoading(true);
+              fetch(backendUrl + `/admin/change-user-password/${id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ newPassword }),
+                credentials: "include",
+              }).then((res) => {
+                res.json().then((data) => {
+                  setLoading(false);
+                  if (data.success) {
+                    toast.success(data.message);
+                    setNewPassword("");
+                  } else {
+                    toast.error(data.message || "Error changing password");
+                  }
+                });
+              });
+            }}
+          >
+            {loading && activeCard === "password" ? "Loading..." : "Save changes"}
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3 border border-gray-200 p-10 shadow-md mt-5">
           <h1 className="mb-5 font-bold">Update Membership</h1>
           <div className="flex flex-col gap-3">
             <label htmlFor="Current membership p-3">Current Membership</label>
