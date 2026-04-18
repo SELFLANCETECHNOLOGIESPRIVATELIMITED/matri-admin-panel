@@ -10,8 +10,10 @@ const SuccessStoryForm = () => {
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [image, setImage] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [successStories, setSuccessStories] = useState([]);
 
     useEffect(() => {
@@ -35,15 +37,36 @@ const SuccessStoryForm = () => {
         }
     };
 
-    const handleImageUpload = async (event) => {
+    const handleImageUpload = (event) => {
         const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
+        if (!file) {
+            return;
+        }
+
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
 
         try {
-            const response = await axios.post(
-                backendUrl + "/admin/uploadFile",
-                formData,
+            if (!imageFile) {
+                toast.error("Please select an image.");
+                return;
+            }
+
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', imageFile);
+
+            const uploadResponse = await axios.post(
+                `${backendUrl}/admin/uploadFile`,
+                uploadFormData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -51,22 +74,17 @@ const SuccessStoryForm = () => {
                     withCredentials: true,
                 }
             );
-            setImage(response.data.fileUrl);
-        } catch (error) {
-            console.error("Error uploading image:", error);
-            toast.error("Error uploading image. Please try again.");
-        }
-    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+            const uploadedImageUrl = uploadResponse?.data?.fileUrl;
+            if (!uploadedImageUrl) {
+                toast.error("Image upload failed. Please try again.");
+                return;
+            }
 
-        try {
             const response = await axios.post(`${backendUrl}/admin/add-success-story`, {
                 title,
                 description,
-                image,
+                image: uploadedImageUrl,
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,14 +94,22 @@ const SuccessStoryForm = () => {
             toast.success("Success story added successfully!");
             setTitle('');
             setDescription('');
-            setImage(null);
+            setImageFile(null);
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            setImagePreview('');
+            const imageInput = document.getElementById('image');
+            if (imageInput) {
+                imageInput.value = '';
+            }
             fetchSuccessStories();
         } catch (error) {
             console.error("Error adding success story:", error);
             toast.error("Error adding success story. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-
-        setIsLoading(false);
     };
 
     const handleDelete = async (id) => {
@@ -103,6 +129,14 @@ const SuccessStoryForm = () => {
             }
         }
     };
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
 
     const handleGoBack = () => {
         router.push('/');
@@ -147,12 +181,12 @@ const SuccessStoryForm = () => {
                         onChange={handleImageUpload}
                         accept="image/*"
                         className="w-full p-2 border border-orange-300 rounded"
-                        required
+                        required={!imagePreview}
                     />
-                    {image && <img src={image} alt="Success Story" className="mt-4 w-48 rounded-lg shadow-md" />}
+                    {imagePreview && <img src={imagePreview} alt="Success Story Preview" className="mt-4 w-48 rounded-lg shadow-md" />}
                 </div>
-                <button type="submit" disabled={isLoading} className="w-full p-2 bg-orange-600 text-white font-semibold rounded">
-                    {isLoading ? 'Adding...' : 'Add Success Story'}
+                <button type="submit" disabled={isSubmitting} className="w-full p-2 bg-orange-600 text-white font-semibold rounded disabled:opacity-60 disabled:cursor-not-allowed">
+                    {isSubmitting ? 'Adding...' : 'Add Success Story'}
                 </button>
             </form>
             <h2 className="text-2xl font-bold text-orange-600 mb-4">Existing Success Stories</h2>

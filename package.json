@@ -9,13 +9,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3002",
+    "start": "next start -p 3001",
     "heroku-postbuild": "next build"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "antd": "^5.18.3",
-    "axios": "^1.7.7",
+    "axios": "1.14.0",
     "formik": "^2.4.6",
     "next": "14.0.2",
     "nprogress": "^0.2.0",
