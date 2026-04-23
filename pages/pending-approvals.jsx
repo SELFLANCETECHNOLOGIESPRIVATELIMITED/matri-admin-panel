@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiSolidEdit, BiFilterAlt } from "react-icons/bi";
@@ -10,31 +12,41 @@ import {
 } from "react-icons/lia";
 import { FaUserXmark } from "react-icons/fa6";
 import { ImUserCheck } from "react-icons/im";
-import { Select, Space } from "antd";
 import { Modal } from "antd";
 import EditModal from "../components/modals/editModal";
 import DeleteModal from "../components/modals/deleteModal";
 import { backendUrl } from "@/url";
-import Link from "next/link";
 import AdminLayout from "@/components/AdminLayout";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useRouter } from 'next/router';
-import { usePopper } from 'react-popper';
+import { useRouter } from "next/navigation";
+import { usePopper } from "react-popper";
 
 const ActionMenu = ({ onClose, onView, onEdit, onDelete, onEditUser }) => (
   <div className="bg-white border border-gray-200 rounded-md shadow-lg z-50 w-48">
     <div className="py-1">
-      <button onClick={onView} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      <button
+        onClick={onView}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
         <AiOutlineEye className="inline mr-2" /> View Profile
       </button>
-      <button onClick={onEdit} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      <button
+        onClick={onEdit}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
         <BiSolidEdit className="inline mr-2" /> Edit Profile
       </button>
-      <button onClick={onDelete} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      <button
+        onClick={onDelete}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
         <RiDeleteBin6Line className="inline mr-2" /> Delete Profile
       </button>
-      <button onClick={onEditUser} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      <button
+        onClick={onEditUser}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
         <BiSolidEdit className="inline mr-2" /> Edit User Details
       </button>
     </div>
@@ -61,11 +73,14 @@ const MembersApprovals = () => {
   const divRef = useRef();
 
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
+    placement: "bottom-end",
     modifiers: [
-      { name: 'offset', options: { offset: [0, 8] } },
-      { name: 'preventOverflow', options: { padding: 8 } },
-      { name: 'flip', options: { fallbackPlacements: ['top-end', 'left-end'] } },
+      { name: "offset", options: { offset: [0, 8] } },
+      { name: "preventOverflow", options: { padding: 8 } },
+      {
+        name: "flip",
+        options: { fallbackPlacements: ["top-end", "left-end"] },
+      },
     ],
   });
 
@@ -212,7 +227,9 @@ const MembersApprovals = () => {
 
   const toggleMenu = useCallback((index, event) => {
     event.stopPropagation();
-    setActiveMenu(prevActiveMenu => prevActiveMenu === index ? null : index);
+    setActiveMenu((prevActiveMenu) =>
+      prevActiveMenu === index ? null : index,
+    );
     setReferenceElement(event.currentTarget);
   }, []);
 
@@ -225,11 +242,25 @@ const MembersApprovals = () => {
         }
       } else {
         if (currentPage <= 2) {
-          pageNumbers.push(1, 2, 3, '...', totalPages);
+          pageNumbers.push(1, 2, 3, "...", totalPages);
         } else if (currentPage >= totalPages - 1) {
-          pageNumbers.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
+          pageNumbers.push(
+            1,
+            "...",
+            totalPages - 2,
+            totalPages - 1,
+            totalPages,
+          );
         } else {
-          pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+          pageNumbers.push(
+            1,
+            "...",
+            currentPage - 1,
+            currentPage,
+            currentPage + 1,
+            "...",
+            totalPages,
+          );
         }
       }
       return pageNumbers;
@@ -248,13 +279,14 @@ const MembersApprovals = () => {
         {getPageNumbers().map((number, index) => (
           <button
             key={index}
-            onClick={() => typeof number === 'number' && onPageChange(number)}
-            className={`px-3 py-2 rounded-md ${currentPage === number
-              ? "bg-[#ED6C0E] text-white"
-              : number === '...'
-                ? "bg-transparent text-gray-600 cursor-default"
-                : "bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors"
-              }`}
+            onClick={() => typeof number === "number" && onPageChange(number)}
+            className={`px-3 py-2 rounded-md ${
+              currentPage === number
+                ? "bg-[#ED6C0E] text-white"
+                : number === "..."
+                  ? "bg-transparent text-gray-600 cursor-default"
+                  : "bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors"
+            }`}
           >
             {number}
           </button>
@@ -353,10 +385,11 @@ const MembersApprovals = () => {
                     </td>
                     <td className="whitespace-nowrap p-4 text-blackColor font-[500] max-xl:w-[300px]">
                       <button
-                        className={`w-[108px] h-[40px] font-roboto p-2 rounded-lg ${!item.isActive
+                        className={`w-[108px] h-[40px] font-roboto p-2 rounded-lg ${
+                          !item.isActive
                             ? "bg-[#CFD8ED] text-[#1240B4]"
                             : "bg-[#CFFFDA] text-[#28A745]"
-                          }`}
+                        }`}
                       >
                         {item.isActive ? "Approved" : "Pending"}
                       </button>
@@ -388,16 +421,20 @@ const MembersApprovals = () => {
           style={{
             ...styles.popper,
             zIndex: 1000,
-            position: 'fixed',
+            position: "fixed",
           }}
           {...attributes.popper}
         >
           <ActionMenu
             onClose={() => setActiveMenu(null)}
-            onView={() => router.push(`/user-profile/${members[activeMenu]._id}`)}
+            onView={() =>
+              router.push(`/user-profile/${members[activeMenu]._id}`)
+            }
             onEdit={() => router.push(`/user-edit/${members[activeMenu]._id}`)}
             onDelete={() => showDeleteModal(members[activeMenu]._id)}
-            onEditUser={() => router.push(`/edit-user?userId=${members[activeMenu]._id}`)}
+            onEditUser={() =>
+              router.push(`/edit-user?userId=${members[activeMenu]._id}`)
+            }
           />
         </div>
       )}
