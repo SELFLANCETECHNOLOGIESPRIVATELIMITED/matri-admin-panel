@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "21.x",
+    "node": "22.x",
     "npm": "10.x"
   },
   "scripts": {
@@ -17,11 +17,11 @@
     "antd": "^5.18.3",
     "axios": "^1.8.2",
     "formik": "^2.4.6",
-    "next": "14.2.35",
+    "next": "^15.5.15",
     "nprogress": "^0.2.0",
     "razorpay": "^2.9.4",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
     "react-popper": "^2.3.0",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
-    "postcss": "^8",
+    "postcss": "^8.5.10",
     "tailwindcss": "^3.3.0"
   }
 }
